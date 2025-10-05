@@ -1,22 +1,80 @@
 {
   "name": "dtln-rs",
   "version": "0.1.0",
-  "description": "Dtln noise reduction module.",
+  "description": "Real-time noise suppression for audio using Dual-Signal Transformation LSTM Network (DTLN)",
   "main": "dtln.js",
   "browser": "dtln.js",
+  "keywords": [
+    "noise-suppression",
+    "audio",
+    "dtln",
+    "webrtc",
+    "denoise",
+    "machine-learning",
+    "real-time",
+    "audio-processing",
+    "lstm",
+    "tensorflow-lite",
+    "rust",
+    "native-addon"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "files": [
+    "src/",
+    "model/",
+    "tflite/*.tar.bz2",
+    "prebuilt/",
+    "build.rs",
+    "Cargo.toml",
+    "Cargo.lock",
+    "dtln.node.js",
+    "dtln_pre.js",
+    "dtln_post.js",
+    "dtln.js",
+    "README.md",
+    "LICENSE",
+    "LICENSE-3rdparty.csv",
+    "NOTICE"
+  ],
   "scripts": {
-    "install-mac-x86_64": "cargo clean;npx cargo-cp-artifact -a cdylib dtln-rs index.node -- cargo build -p dtln-rs --lib --release --message-format=json-render-diagnostics --target x86_64-apple-darwin; cp dtln.node.js dtln.js",
-    "install-mac-arm64": "cargo clean;npx cargo-cp-artifact -a cdylib dtln-rs index.node -- cargo build -p dtln-rs --lib --release --message-format=json-render-diagnostics --target aarch64-apple-darwin; cp dtln.node.js dtln.js",
+    "install-mac-x86_64": "cargo clean && npx cargo-cp-artifact -a cdylib dtln-rs index.node -- cargo build -p dtln-rs --lib --release --message-format=json-render-diagnostics --target x86_64-apple-darwin && cp dtln.node.js dtln.js",
+    "install-mac-arm64": "cargo clean && npx cargo-cp-artifact -a cdylib dtln-rs index.node -- cargo build -p dtln-rs --lib --release --message-format=json-render-diagnostics --target aarch64-apple-darwin && cp dtln.node.js dtln.js",
+    "install-linux-x64": "cargo clean && npx cargo-cp-artifact -a cdylib dtln-rs index.node -- cargo build -p dtln-rs --lib --release --message-format=json-render-diagnostics --target x86_64-unknown-linux-gnu && cp dtln.node.js dtln.js",
+    "install-linux-arm64": "cargo clean && npx cargo-cp-artifact -a cdylib dtln-rs index.node -- cargo build -p dtln-rs --lib --release --message-format=json-render-diagnostics --target aarch64-unknown-linux-gnu && cp dtln.node.js dtln.js",
+    "install-win-x64": "cargo clean && npx cargo-cp-artifact -a cdylib dtln-rs index.node -- cargo build -p dtln-rs --lib --release --message-format=json-render-diagnostics --target x86_64-pc-windows-msvc && copy dtln.node.js dtln.js",
+    "install-win-arm64": "cargo clean && npx cargo-cp-artifact -a cdylib dtln-rs index.node -- cargo build -p dtln-rs --lib --release --message-format=json-render-diagnostics --target aarch64-pc-windows-msvc && copy dtln.node.js dtln.js",
     "install-wasm": "node ./scripts/install-wasm.js",
     "build": "npx cargo-cp-artifact -nc index.node -- cargo build --message-format=json-render-diagnostics",
     "build-debug": "npm run build --",
     "build-release": "npm run build -- --release",
-    "install-native": "f() { if [[ \"$TARGET_ARCH\" == \"x64\" ]]; then npm run install-mac-x86_64; else npm run install-mac-arm64; fi }; f",
+    "install-native": "node -e \"const os = require('os'); const platform = process.platform; const arch = process.arch; const scripts = { 'darwin-x64': 'install-mac-x86_64', 'darwin-arm64': 'install-mac-arm64', 'linux-x64': 'install-linux-x64', 'linux-arm64': 'install-linux-arm64', 'win32-x64': 'install-win-x64', 'win32-arm64': 'install-win-arm64' }; const script = scripts[platform + '-' + arch]; if (!script) { console.error('Unsupported platform: ' + platform + '-' + arch); process.exit(1); } require('child_process').execSync('npm run ' + script, { stdio: 'inherit' });\"",
+    "postinstall": "node -e \"const fs = require('fs'); if (fs.existsSync('index.node') && fs.existsSync('dtln.js')) { console.log('✓ Using prebuilt binaries'); process.exit(0); } if (!process.env.npm_config_build_from_source) { console.log('⚠ Prebuilt binaries not found. Set npm_config_build_from_source=true to build from source.'); process.exit(0); }\" && npm run install-native",
+    "prepublishOnly": "node -e \"console.log('⚠ Warning: Make sure to build binaries for all platforms before publishing!')\"",
     "test": "cargo test"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/dtln-rs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/dtln-rs/issues"
+  },
+  "homepage": "https://github.com/yourusername/dtln-rs#readme",
   "author": "Jason Thomas",
-  "license": "Private",
+  "license": "MIT",
   "devDependencies": {
     "cargo-cp-artifact": "^0.1"
-  }
+  },
+  "optionalDependencies": {}
 }

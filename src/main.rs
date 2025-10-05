@@ -1,21 +1,21 @@
-#[cfg(target_os = "macos")]
+#[cfg(not(target_os = "emscripten"))]
 use anyhow::Result;
 
-#[cfg(target_os = "macos")]
+#[cfg(not(target_os = "emscripten"))]
 use dtln_rs::dtln_processor::{DtlnProcessEngine, DtlnDeferredProcessor};
 
-#[cfg(target_os = "macos")]
+#[cfg(not(target_os = "emscripten"))]
 use dtln_rs::dtln_utilities::{read_wav_to_pcm32, write_pcm32_to_wav};
 
-#[cfg(target_os = "macos")]
+#[cfg(not(target_os = "emscripten"))]
 const BLOCK_SIZE: usize = 1024;
 
-#[cfg(target_os = "macos")]
+#[cfg(not(target_os = "emscripten"))]
 const EXPECTED_SAMPLE_RATE: u32 = 16000;
 
 // Build sample program that uses the dtln_rs library
-// to process 16khz wav files for OSX.
-#[cfg(target_os = "macos")]
+// to process 16khz wav files (works on macOS, Linux, Windows).
+#[cfg(not(target_os = "emscripten"))]
 fn main() -> Result<()> {
     // Check that there are two arguments
     if std::env::args().count() != 3 {
@@ -61,7 +61,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(not(target_os = "emscripten"))]
 fn check_is_wav(name: &str, check_exists: bool) {
     let path = std::path::Path::new(name);
 

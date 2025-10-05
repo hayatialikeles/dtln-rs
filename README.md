@@ -10,40 +10,201 @@ This project is a noise reduction module that utilizes Rust and Node.js. It prov
 
 ## Installation
 
-To install the module, you can use one of the following scripts based on your platform:
+### Automatic Installation (Recommended)
 
+Simply run `npm install` and the module will automatically detect your platform and build accordingly:
+
+```bash
+npm install
+```
+
+This will automatically build the native module for your current platform (macOS, Linux, or Windows).
+
+### Manual Platform-Specific Installation
+
+If automatic installation fails, you can manually specify your platform:
+
+#### macOS
 - **Mac x86_64**: `npm run install-mac-x86_64`
 - **Mac ARM64**: `npm run install-mac-arm64`
+
+#### Linux
+- **Linux x86_64**: `npm run install-linux-x64`
+- **Linux ARM64**: `npm run install-linux-arm64`
+
+#### Windows
+- **Windows x86_64**: `npm run install-win-x64`
+- **Windows ARM64**: `npm run install-win-arm64`
+
+#### WebAssembly
 - **WASM**: `npm run install-wasm`
-- **Native**: `npm run install-native`
+
+### Generic Native Build
+- **Auto-detect platform**: `npm run install-native`
 
 ## Build Steps
 
 The following build steps are available in the `package.json`:
 
-- **install-mac-x86_64**: Cleans the build environment and builds the project for the x86_64 architecture on macOS. It uses `cargo-cp-artifact` to copy the build artifact and renames it to `dtln.js`.
+- **install-native**: Automatically detects your platform and architecture, then runs the appropriate installation script. Supports macOS (x64/ARM64), Linux (x64/ARM64), and Windows (x64/ARM64).
 
-- **install-mac-arm64**: Similar to the x86_64 script, but targets the ARM64 architecture on macOS.
+- **install-mac-x86_64**: Builds for x86_64 architecture on macOS
+- **install-mac-arm64**: Builds for ARM64 architecture on macOS
+- **install-linux-x64**: Builds for x86_64 architecture on Linux
+- **install-linux-arm64**: Builds for ARM64 architecture on Linux
+- **install-win-x64**: Builds for x86_64 architecture on Windows
+- **install-win-arm64**: Builds for ARM64 architecture on Windows
 
-- **install-wasm**: Runs a Node.js script to install the WebAssembly version of the module.
+- **install-wasm**: Builds the WebAssembly version of the module
 
-- **build**: Builds the project using `cargo` with JSON-rendered diagnostics.
+- **build**: Builds the project using `cargo` with JSON-rendered diagnostics
+- **build-debug**: Runs the `build` script in debug mode
+- **build-release**: Runs the `build` script in release mode
 
-- **build-debug**: Runs the `build` script in debug mode.
+- **test**: Runs the test suite using `cargo test`
 
-- **build-release**: Runs the `build` script in release mode.
+## Supported Platforms
 
-- **install-native**: Determines the target architecture and runs the appropriate installation script for macOS.
+- **macOS**: x86_64, ARM64 (Apple Silicon)
+- **Linux**: x86_64, ARM64
+- **Windows**: x86_64, ARM64
+- **WebAssembly**: WASM32
 
-- **test**: Runs the test suite using `cargo test`.
+## Prerequisites
+
+- **Rust**: Install from [rustup.rs](https://rustup.rs/)
+- **Node.js**: Version 14 or higher
+- **Platform-specific build tools**:
+  - macOS: Xcode Command Line Tools
+  - Linux: build-essential, gcc
+  - Windows: Visual Studio Build Tools with C++ support
 
 ## Usage
 
-To use the dtln-rs module, follow these steps:
+### Quick Start
 
-1. **Installation**: Follow the installation instructions above to set up the module on your platform.
-2. **Running the Module**: After installation, you can run the module using the appropriate command for your platform.
-3. **Configuration**: If there are any configuration files or environment variables, describe how to set them up here.
+```javascript
+const dtln = require('dtln-rs');
+
+// Create denoiser instance
+const denoiser = dtln.dtln_create();
+
+// Prepare audio buffers (16kHz, mono, Float32Array)
+const FRAME_SIZE = 512; // 32ms at 16kHz
+const inputFrame = new Float32Array(FRAME_SIZE);
+const outputFrame = new Float32Array(FRAME_SIZE);
+
+// Fill inputFrame with your audio data...
+
+// Process audio
+const isStarved = dtln.dtln_denoise(denoiser, inputFrame, outputFrame);
+
+// Use outputFrame (denoised audio)...
+
+// Clean up when done
+dtln.dtln_stop(denoiser);
+```
+
+### API Reference
+
+#### `dtln_create()`
+Creates a new DTLN denoiser instance.
+
+**Returns:** Denoiser handle
+
+**Example:**
+```javascript
+const denoiser = dtln.dtln_create();
+```
+
+#### `dtln_denoise(denoiser, inputSamples, outputSamples)`
+Processes audio samples and removes noise.
+
+**Parameters:**
+- `denoiser`: Denoiser handle from `dtln_create()`
+- `inputSamples`: Float32Array of input audio samples (16kHz, mono)
+- `outputSamples`: Float32Array to receive denoised audio (same length as input)
+
+**Returns:** Boolean indicating if processor is starved (processing slower than real-time)
+
+**Example:**
+```javascript
+const inputFrame = new Float32Array(512);
+const outputFrame = new Float32Array(512);
+const isStarved = dtln.dtln_denoise(denoiser, inputFrame, outputFrame);
+
+if (isStarved) {
+  console.warn('Processor cannot keep up with real-time');
+}
+```
+
+#### `dtln_stop(denoiser)`
+Stops and cleans up the denoiser instance.
+
+**Parameters:**
+- `denoiser`: Denoiser handle to stop
+
+**Example:**
+```javascript
+dtln.dtln_stop(denoiser);
+```
+
+### Audio Requirements
+
+- **Sample Rate:** 16kHz (16000 Hz)
+- **Format:** Mono (single channel)
+- **Data Type:** Float32Array (-1.0 to 1.0)
+- **Frame Size:** Typically 512 samples (32ms)
+
+### Example: WebRTC Integration
+
+```javascript
+const dtln = require('dtln-rs');
+
+class AudioDenoiser {
+  constructor() {
+    this.denoiser = dtln.dtln_create();
+    this.frameSize = 512;
+  }
+
+  process(audioData) {
+    // Ensure audio is 16kHz mono Float32Array
+    const input = new Float32Array(audioData);
+    const output = new Float32Array(input.length);
+
+    // Process in chunks
+    for (let i = 0; i < input.length; i += this.frameSize) {
+      const chunk = input.slice(i, i + this.frameSize);
+      const outChunk = new Float32Array(this.frameSize);
+
+      dtln.dtln_denoise(this.denoiser, chunk, outChunk);
+
+      output.set(outChunk, i);
+    }
+
+    return output;
+  }
+
+  destroy() {
+    dtln.dtln_stop(this.denoiser);
+  }
+}
+
+// Usage
+const denoiser = new AudioDenoiser();
+const cleanAudio = denoiser.process(noisyAudio);
+denoiser.destroy();
+```
+
+### Running the Example
+
+Try the included example:
+
+```bash
+node example.js
+```
+
+This demonstrates basic usage with simulated audio data.
 
 ## Contributing
 
