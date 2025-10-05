@@ -298,7 +298,7 @@ Special thanks to the Rust and Node.js communities for excellent tooling and lib
 
 - 🐛 **Issues**: [GitHub Issues](https://github.com/hayatialikeles/dtln-rs/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/hayatialikeles/dtln-rs/discussions)
-- 📧 **Email**: hayatialikeles@gmail.com
+- 📧 **Email**: hayati.alikeles@gmail.com
 
 ### 🔗 Links
 

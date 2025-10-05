@@ -298,7 +298,7 @@ Rust ve Node.js topluluklarına mükemmel araçlar ve kütüphaneler için özel
 
 - 🐛 **Sorunlar**: [GitHub Issues](https://github.com/hayatialikeles/dtln-rs/issues)
 - 💬 **Tartışmalar**: [GitHub Discussions](https://github.com/hayatialikeles/dtln-rs/discussions)
-- 📧 **E-posta**: hayatialikeles@gmail.com
+- 📧 **E-posta**: hayati.alikeles@gmail.com
 
 ### 🔗 Linkler
 
