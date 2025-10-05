@@ -50,10 +50,10 @@ npm install dtln-rs
 - ✅ Linux x64
 - ✅ Linux ARM64
 
-#### Temel Kullanım
+#### Temel Kullanım (JavaScript)
 
 ```javascript
-const dtln = require('dtln-rs');
+const dtln = require('@hayatialikeles/dtln-rs');
 
 // Denoiser başlat
 const denoiser = dtln.dtln_create();
@@ -68,6 +68,25 @@ const isStarved = dtln.dtln_denoise(denoiser, inputAudio, outputAudio);
 // Temizle
 dtln.dtln_stop(denoiser);
 ```
+
+#### TypeScript Kullanımı
+
+Tam TypeScript desteği - tip tanımlamaları dahil!
+
+```typescript
+import * as dtln from '@hayatialikeles/dtln-rs';
+
+const denoiser: dtln.DenoiserHandle = dtln.dtln_create();
+
+const inputAudio = new Float32Array(512);
+const outputAudio = new Float32Array(512);
+
+const isStarved: boolean = dtln.dtln_denoise(denoiser, inputAudio, outputAudio);
+
+dtln.dtln_stop(denoiser);
+```
+
+Kapsamlı TypeScript örnekleri için [example.ts](example.ts) dosyasına bakın.
 
 ### 📊 Performans Benchmarkları
 
