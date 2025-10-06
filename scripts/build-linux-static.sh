@@ -12,7 +12,7 @@ if [[ "$(uname)" != "Linux" ]]; then
 fi
 
 # Navigate to project directory
-cd ~/dtln-rs || {
+cd /home/siriusgrupsoftware/dtln-rs || {
     echo "❌ dtln-rs directory not found at ~/dtln-rs"
     echo "💡 Clone it first: git clone YOUR_REPO_URL ~/dtln-rs"
     exit 1
@@ -55,7 +55,7 @@ fi
 echo ""
 echo "📥 Step 4: Clone and build TensorFlow Lite"
 echo "-------------------------------------------"
-cd ~/
+cd /home/siriusgrupsoftware/
 if [ ! -d "tensorflow" ]; then
     echo "Cloning TensorFlow..."
     git clone --depth=1 https://github.com/tensorflow/tensorflow.git
@@ -83,7 +83,7 @@ echo "✅ TensorFlow Lite built successfully"
 echo ""
 echo "📂 Step 5: Copy TFLite libraries to dtln-rs"
 echo "--------------------------------------------"
-cd ~/dtln-rs
+cd /home/siriusgrupsoftware/dtln-rs
 mkdir -p tflite/lib
 
 echo "Copying static libraries..."
