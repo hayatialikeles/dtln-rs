@@ -213,13 +213,43 @@ audioContext.createScriptProcessor(512, 1, 1).onaudioprocess = (e) => {
 window.addEventListener('beforeunload', () => denoiser.destroy());
 ```
 
+### 🐳 Docker Usage
+
+When using this package in Docker containers, you **must** install C++ runtime libraries:
+
+```dockerfile
+FROM node:18-slim
+
+# Install required C++ libraries for dtln-rs
+RUN apt-get update && apt-get install -y \
+    libc++-dev \
+    libc++abi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+CMD ["node", "index.js"]
+```
+
+**Without these libraries, you'll get:**
+```
+libc++.so.1: cannot open shared object file: No such file or directory
+```
+
+See [DOCKER.md](DOCKER.md) for complete Docker integration guide.
+
+---
+
 ### 🛠️ Platform Support
 
 | Platform | Status | Installation |
 |----------|--------|--------------|
 | macOS ARM64 (M1/M2/M3) | ✅ Prebuilt | `npm install` (No Rust required) |
 | macOS x64 (Intel) | ✅ Prebuilt | `npm install` (No Rust required) |
-| Linux x64 | ✅ Prebuilt | `npm install` (No Rust required) |
+| Linux x64 | ✅ Prebuilt | `npm install` + Docker libs |
 | Linux ARM64 | 🔨 Build from source | Requires Rust toolchain |
 | Windows x64 | 🔨 Build from source | Requires Rust + MSVC |
 

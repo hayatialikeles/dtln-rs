@@ -88,6 +88,36 @@ dtln.dtln_stop(denoiser);
 
 Kapsamlı TypeScript örnekleri için [example.ts](example.ts) dosyasına bakın.
 
+### 🐳 Docker Kullanımı
+
+Bu paketi Docker container'larında kullanırken, C++ runtime kütüphanelerini **mutlaka** yüklemelisiniz:
+
+```dockerfile
+FROM node:18-slim
+
+# dtln-rs için gerekli C++ kütüphanelerini yükle
+RUN apt-get update && apt-get install -y \
+    libc++-dev \
+    libc++abi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+CMD ["node", "index.js"]
+```
+
+**Bu kütüphaneler olmadan şu hatayı alırsınız:**
+```
+libc++.so.1: cannot open shared object file: No such file or directory
+```
+
+Tam Docker entegrasyon rehberi için [DOCKER.md](DOCKER.md) dosyasına bakın.
+
+---
+
 ### 📊 Performans Benchmarkları
 
 MacBook Pro M1 üzerinde gerçek dünya performansı:
