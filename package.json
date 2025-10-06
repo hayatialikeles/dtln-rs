@@ -1,6 +1,6 @@
 {
   "name": "@hayatialikeles/dtln-rs",
-  "version": "0.2.0",
+  "version": "0.2.3",
   "description": "Real-time noise suppression for audio using Dual-Signal Transformation LSTM Network (DTLN)",
   "main": "dtln.js",
   "types": "index.d.ts",
@@ -48,6 +48,8 @@
     "example.ts",
     "README.md",
     "README.tr.md",
+    "DOCKER.md",
+    "LINUX_BUILD.md",
     "LICENSE",
     "LICENSE-3rdparty.csv",
     "NOTICE"

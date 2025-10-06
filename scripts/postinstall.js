@@ -8,8 +8,14 @@ const arch = process.arch;
 
 console.log(`🔍 Platform: ${platform}-${arch}`);
 
+// Determine the package root directory
+const packageRoot = path.join(__dirname, '..');
+
 // Check if already installed in root
-if (fs.existsSync('index.node') && fs.existsSync('dtln.js')) {
+const rootIndexNode = path.join(packageRoot, 'index.node');
+const rootDtlnJs = path.join(packageRoot, 'dtln.js');
+
+if (fs.existsSync(rootIndexNode) && fs.existsSync(rootDtlnJs)) {
   console.log('✅ Binaries already installed in root directory');
   process.exit(0);
 }
@@ -48,11 +54,12 @@ if (!prebuiltDir) {
   }
 }
 
-const prebuiltPath = path.join(__dirname, '..', 'prebuilt', prebuiltDir);
+const prebuiltPath = path.join(packageRoot, 'prebuilt', prebuiltDir);
 
 if (!fs.existsSync(prebuiltPath)) {
   console.log(`❌ Prebuilt directory not found: ${prebuiltPath}`);
   console.log('💡 To build from source, run: npm install --build-from-source');
+  console.log('ℹ️  Note: dtln.node.js will attempt to load from prebuilt directory at runtime');
   process.exit(0);
 }
 
@@ -64,13 +71,18 @@ let copiedFiles = 0;
 
 filesToCopy.forEach(file => {
   const src = path.join(prebuiltPath, file);
-  const dest = path.join(__dirname, '..', file);
+  const dest = path.join(packageRoot, file);
 
   if (fs.existsSync(src)) {
     try {
       fs.copyFileSync(src, dest);
       const stats = fs.statSync(dest);
-      console.log(`  ✓ Copied ${file} (${(stats.size / 1024 / 1024).toFixed(2)} MB)`);
+      const sizeMB = stats.size / 1024 / 1024;
+      if (sizeMB >= 0.01) {
+        console.log(`  ✓ Copied ${file} (${sizeMB.toFixed(2)} MB)`);
+      } else {
+        console.log(`  ✓ Copied ${file} (${(stats.size / 1024).toFixed(2)} KB)`);
+      }
       copiedFiles++;
     } catch (err) {
       console.error(`  ✗ Failed to copy ${file}:`, err.message);
